@@ -8,7 +8,11 @@ library(targets)
 # Set target-specific options such as packages.
 tar_option_set(
   packages = c(
-    "tidyverse",
+    "ggplot2",
+    "readr",
+    "tidyr",
+    "stringr",
+    "dplyr",
     "gaussquad",
     "greta",
     "bayesplot",

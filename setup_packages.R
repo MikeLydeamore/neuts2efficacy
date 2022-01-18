@@ -1,6 +1,10 @@
 install.packages(
     c(
-    "tidyverse",
+    "ggplot2",
+    "readr",
+    "tidyr",
+    "stringr",
+    "dplyr",
     "gaussquad",
     "bayesplot",
     "testthat",
