@@ -8,3 +8,11 @@ jobs:
       - run: ls ${{github.workspace}}
       - run: Rscript ./setup_packages.R
       - run: Rscript -e "library(targets); tar_make()"
+      - uses: actions/upload-artifact@v2
+      with:
+        name: ve_wanining_omicron
+        path: figures/ve_waning_omicron.png
+      - uses: actions/upload-artifact@v2
+      with:
+        name: ve_waning_omicron_with_data
+        path: figures/ve_waning_omicron_with_data.png
