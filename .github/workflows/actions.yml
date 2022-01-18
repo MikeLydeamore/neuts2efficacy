@@ -10,3 +10,11 @@ jobs:
         run: sudo apt-get install -y libcurl4-openssl-dev
       - run: Rscript ./setup_packages.R
       - run: Rscript -e "library(targets); tar_make()"
+      - uses: actions/upload-artifact@v2
+        with:
+          name: plots
+          path: figures/
+      - uses: actions/upload-artifact@v2
+        with:
+          name: spreadsheets
+          path: outputs/
