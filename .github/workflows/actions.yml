@@ -1,0 +1,6 @@
+name: Build Targets
+jobs:
+  Build-Action:
+    runs-on: ubuntu-latest
+    steps:
+      - run: Rscript -e "library(targets); tar_make()"
