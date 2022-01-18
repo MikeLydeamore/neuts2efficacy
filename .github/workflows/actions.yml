@@ -4,5 +4,6 @@ jobs:
   Build-Action:
     runs-on: ubuntu-latest
     steps:
-      - run: Rscript ${{github.workspace}}/setup_packages.R
+      - run: ls ${{github.workspace}}
+      - run: Rscript ./setup_packages.R
       - run: Rscript -e "library(targets); tar_make()"
