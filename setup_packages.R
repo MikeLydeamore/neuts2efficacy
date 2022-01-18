@@ -2,7 +2,6 @@ install.packages(
     c(
     "tidyverse",
     "gaussquad",
-    "greta",
     "bayesplot",
     "testthat",
     "colorspace",
