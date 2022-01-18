@@ -1,4 +1,5 @@
 name: Build Targets
+on: [push]
 jobs:
   Build-Action:
     runs-on: ubuntu-latest
