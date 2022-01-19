@@ -16,7 +16,7 @@ jobs:
       - name: Install and activate renv
         run: |
           install.packages("renv")
-          renv::activate()
+          renv::restore()
         shell: Rscript {0}
       - name: Get R and OS version
         id: get-version
