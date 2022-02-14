@@ -16,8 +16,6 @@ jobs:
       - name: Install and activate renv
         run: |
           install.packages("renv")
-          renv::restore()
-          greta::install_greta_deps()
         shell: Rscript {0}
       - name: Get R and OS version
         id: get-version
@@ -30,7 +28,14 @@ jobs:
         with:
           path: ${{ env.RENV_PATHS_ROOT }}
           key: ${{ steps.get-version.outputs.os-version }}-${{ steps.get-version.outputs.r-version }}-${{ inputs.cache-version }}-${{ hashFiles('renv.lock') }}
-          restore-keys: ${{ steps.get-version.outputs.os-version }}-${{ steps.get-version.outputs.r-version }}-${{inputs.cache-version }}-
+          restore-keys: ${{ steps.get-version.outputs.os-version }}-${{
+          steps.get-version.outputs.r-version }}-${{inputs.cache-version }}-
+          
+      - name: "Restore packages + GRETA"
+        run: |
+          renv::restore()
+          greta::install_greta_deps()
+        shell: Rscript {0}
 
       - run: Rscript -e "library(targets); tar_make()"
       - uses: actions/upload-artifact@v2
