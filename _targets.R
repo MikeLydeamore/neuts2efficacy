@@ -122,7 +122,9 @@ list(
   tar_target(
     ve_predictions_delta,
     predict_ves(
-      neut_model, draws
+      neut_model,
+      draws,
+      omicron_infection_multiplier = 4.4
     )
   ),
   tar_target(
@@ -176,7 +178,8 @@ list(
     predict_ves(
       neut_model,
       draws,
-      omicron = TRUE
+      omicron = TRUE,
+      omicron_infection_multiplier = 14.4
     )
   ),
 
@@ -193,6 +196,9 @@ list(
     plot_waning(
       ve_predictions_omicron,
       immunity_levels = c(
+        "Omicron Infection",
+        "Pfizer vaccine dose 2 + Omicron infection",
+        "mRNA booster + Omicron infection",
         "mRNA booster",
         "Pfizer vaccine dose 2",
         "AZ vaccine dose 2")
@@ -222,15 +228,18 @@ list(
   tar_target(
     waning_plot_omicron_data,
     plot_waning(
-    ve_predictions_omicron,
-    omicron_ve_data,
-    immunity_levels = c(
-      "mRNA booster",
-      "Pfizer vaccine dose 2",
-      "AZ vaccine dose 2")
+      ve_predictions_omicron,
+      omicron_ve_data,
+      immunity_levels = c(
+        "Omicron Infection",
+        "Pfizer vaccine dose 2 + Omicron infection",
+        "mRNA booster + Omicron infection",
+        "mRNA booster",
+        "Pfizer vaccine dose 2",
+        "AZ vaccine dose 2")
     ) +
-    ggtitle("Predicted waning in vaccine efficacy",
-          "against the Omicron variant")
+      ggtitle("Predicted waning in vaccine efficacy",
+              "against the Omicron variant")
   ),
 
   tar_target(
@@ -254,16 +263,38 @@ list(
 
   tar_target(
     omicron_params_plot,
-    plot_omicron_params(omicron_params)
+    plot_omicron_params(omicron_params) +
+      coord_cartesian(
+        xlim = c(0, 0.7),
+        ylim = c(0.5, 1.4)
+      )
   ),
 
   tar_target(
     save_omicron_params_plot,
     ggsave("figures/omicron_params.png",
-       plot = omicron_params_plot,
-       width = 7,
-       height = 7,
-       bg = "white")
+           plot = omicron_params_plot,
+           width = 7,
+           height = 7,
+           bg = "white")
+  ),
+
+  tar_target(
+    omicron_params_plot_100pc,
+    plot_omicron_params(omicron_params) +
+      coord_cartesian(
+        xlim = c(0, 1),
+        ylim = c(0.5, 1.4)
+      )
+  ),
+
+  tar_target(
+    save_omicron_params_plot_100pc,
+    ggsave("figures/omicron_params_100pc.png",
+           plot = omicron_params_plot_100pc,
+           width = 7,
+           height = 7,
+           bg = "white")
   ),
 
   tar_target(
@@ -327,9 +358,6 @@ list(
         data = omicron_scenarios,
         vjust = 0,
         nudge_y = 0.02
-      ) +
-      coord_cartesian(
-        xlim = c(0, 0.6)
       )
   ),
 
@@ -356,199 +384,6 @@ list(
     write_csv(
       scenario_parameters,
       "outputs/scenario_parameters_omicron.csv"
-    )
-  ),
-
-  tar_target(
-    ve_predictions_omicron_scenarios,
-    predict_ve_scenarios(
-      scenarios = omicron_scenarios,
-      neut_model = neut_model,
-      draws = draws,
-      omicron = TRUE
-    )
-  ),
-
-  tar_target(
-    save_ve_predictions_omicron_scenarios,
-    write_csv(
-      ve_predictions_omicron_scenarios,
-      "outputs/ve_waning_predictions_omicron_scenarios.csv"
-    )
-  ),
-
-  tar_target(
-    plot_mean_efficacies,
-    ve_predictions_omicron_scenarios %>%
-    mutate(
-      scenario = factor(
-        scenario,
-        levels = c(
-          "pessimistic",
-          "intermediate",
-          "optimistic"
-        )
-      ),
-      outcome = factor(
-        outcome,
-        levels = c(
-          "death",
-          "hospitalisation",
-          "symptoms",
-          "acquisition",
-          "transmission"
-        ),
-        labels = c(
-          "Death",
-          "Hospitalisation",
-          "Symptoms",
-          "Acquisition",
-          "Onward transmission"
-        ),
-      ),
-      immunity = factor(
-        immunity,
-        levels = c(
-          "mRNA_booster",
-          "Pfizer_dose_2",
-          "infection",
-          "AZ_dose_2",
-          "Pfizer_dose_1",
-          "AZ_dose_1"
-        ),
-        labels = c(
-          "mRNA booster",
-          "Pfizer dose 2",
-          "Infection",
-          "AZ dose 2",
-          "Pfizer dose 1",
-          "AZ dose 1"
-        )
-      )
-    ) %>%
-    ggplot(
-      aes(
-        x = days,
-        y = ve,
-        colour = immunity
-      )
-    ) +
-    geom_line(
-      size = 1,
-      alpha = 0.8
-    ) +
-    facet_grid(
-      outcome ~ scenario
-    ) +
-    ylab("Efficacy") +
-    xlab("Days since peak immunity") +
-    theme_minimal()
-  ),
-
-  tar_target(
-    save_plot_mean_efficacies,
-    ggsave("figures/plot_mean_efficacies.png",
-       plot = plot_mean_efficacies,
-       width = 7,
-       height = 7,
-       bg = "white")
-  ),
-
-  tar_target(
-    evasion_plot_data,
-    bind_rows(
-      omicron = ve_predictions_omicron_scenarios %>%
-        filter(scenario == "intermediate") %>%
-        select(
-          outcome,
-          immunity,
-          days,
-          ve
-        ),
-      delta = ve_predictions_delta %>%
-        select(
-          outcome,
-          immunity,
-          days,
-          ve = ve_predict_mean
-        ),
-      .id = "variant"
-    ) %>%
-    filter(
-      outcome %in% c("acquisition", "transmission")
-    ) %>%
-    pivot_wider(
-      names_from = outcome,
-      values_from = ve
-    ) %>%
-    mutate(
-      overall = 1 - ((1 - acquisition) * (1 - transmission))
-    ) %>%
-    select(
-      -acquisition,
-      -transmission
-    ) %>%
-    pivot_wider(
-      names_from = variant,
-      values_from = overall
-    ) %>%
-    mutate(
-      evasion = 1 - omicron / delta
-    ) %>%
-    mutate(
-      immunity = factor(
-        immunity,
-        levels = c(
-          "AZ_dose_1",
-          "Pfizer_dose_1",
-          "AZ_dose_2",
-          "infection",
-          "Pfizer_dose_2",
-          "mRNA_booster"
-        ),
-        labels = c(
-          "AZ dose 1",
-          "Pfizer dose 1",
-          "AZ dose 2",
-          "Infection",
-          "Pfizer dose 2",
-          "mRNA booster"
-        )
-      )
-    )
-  ),
-
-  tar_target(
-    evasion_plot,
-    ggplot(
-      evasion_plot_data,
-      aes(
-        x = days,
-        y = evasion,
-        colour = immunity
-      )
-    ) +
-    geom_line(
-      size = 2
-    ) +
-    scale_y_continuous(
-      labels = scales::percent,
-      limits = c(0, 1)
-    ) +
-    ylab("Reduction in overall VE against transmission") +
-    xlab("Days since peak immunity") +
-    ggtitle("Omicron immune evasion as a function of immunity") +
-    theme_minimal()
-  ),
-
-  tar_target(
-    save_evasion_plot,
-    ggsave(
-      "figures/evasion_vs_immunity.png",
-      evasion_plot,
-      width = 7,
-      height = 7,
-      bg = "white"
     )
   ),
 
