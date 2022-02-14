@@ -32,7 +32,12 @@ jobs:
           greta::install_greta_deps()
         shell: Rscript {0}
 
-      - run: Rscript -e "library(targets); tar_make()"
+      - name: Run targets
+        run: |
+          library(targets)
+          tar_make()
+        shell: Rscript {0}
+        
       - uses: actions/upload-artifact@v2
         with:
           name: plots
