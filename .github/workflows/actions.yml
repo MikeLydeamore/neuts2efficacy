@@ -1,5 +1,5 @@
 name: Build Targets
-on: [push]
+on: [push, workflow_run]
 jobs:
   Build-Action:
     runs-on: ubuntu-latest
