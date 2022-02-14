@@ -29,7 +29,6 @@ jobs:
           options(repos = c(gretadev = 'https://greta-dev.r-universe.dev',CRAN = 'https://cloud.r-project.org'))
           install.packages("remotes")
           remotes::install_deps(dependencies = TRUE)
-          remotes::install_github("greta-dev/greta")
           greta::install_greta_deps()
         shell: Rscript {0}
 
