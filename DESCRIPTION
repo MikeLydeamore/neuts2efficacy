@@ -25,4 +25,5 @@ Imports:
     greta,
     bayesplot,
     testthat,
-    colorspace
+    colorspace,
+    targets
