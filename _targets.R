@@ -413,6 +413,21 @@ list(
        width = 7,
        height = 7,
        bg = "white")
+  ),
+
+  tar_target(
+    copy_data_for_shiny,
+    {
+      file.copy(
+        "outputs/omicron_ve_data.csv",
+        "shiny/shinydata/omicron_ve_data.csv"
+      )
+
+      file.copy(
+        "outputs/ve_waning_predictions_omicron.csv",
+        "shiny/shinydata/ve_waning_predictions_omicron.csv"
+      )
+    }
   )
 
 )
