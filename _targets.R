@@ -224,6 +224,14 @@ list(
   ),
 
   tar_target(
+    save_omicron_ve_data,
+    write_csv(
+      omicron_ve_data,
+      "outputs/omicron_ve_data.csv"
+      )
+  ),
+
+  tar_target(
     waning_plot_omicron_data,
     plot_waning(
       ve_predictions_omicron,
