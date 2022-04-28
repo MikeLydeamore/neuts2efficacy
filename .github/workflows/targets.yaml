@@ -91,7 +91,7 @@ jobs:
         shell: Rscript {0}
 
       - name: Run targets pipeline
-        run: targets::tar_make()
+        run: greta::install_greta_deps(); targets::tar_make()
         shell: Rscript {0}
 
       - name: Identify files that the targets pipeline produced
