@@ -28,7 +28,7 @@ on:
     branches:
       - main
       - master
-      - targets
+      - actions
 
 name: targets
 
