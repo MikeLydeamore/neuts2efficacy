@@ -23,7 +23,7 @@ tar_option_set(
 
 # load all functions
 . <- lapply(list.files("R", full.names = TRUE), source)
-
+ 
 # End this file with a list of target objects.
 list(
 
